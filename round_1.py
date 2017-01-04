@@ -403,8 +403,7 @@ def is_palindrome(x):
     for index in range(len(str(x)) // 2):
         if ((x // (pow(10, index))) % 10) != ((x // (pow(10, len(str(x)) - index - 1))) % 10):
             return False
-        if index == (len(str(x)) // 2) - 1:
-            return True
+    return True
 
 
 print('\n#9. Palindrome Number:')
@@ -605,6 +604,17 @@ test_remove_element_val = 3
 print(remove_element(remove_element_nums, test_remove_element_val))
 print(remove_element_better(remove_element_better_nums, test_remove_element_val))
 print(remove_element_best(remove_element_best_nums, test_remove_element_val))
+
+
+# 28. Implement strStr()
+def str_str(haystack, needle):
+    pass
+
+
+str_str_haystack = 'cabac'
+str_str_needle = 'aba'
+print('\n#28.Implement strStr():')
+print(str_str(str_str_haystack, str_str_needle))
 
 
 # 31. Next Permutation
@@ -1253,9 +1263,12 @@ merge_nums = [1, 1, 1, 3, 3, 4, 5, 5]
 merge_m = 3
 merge_n = 1
 merge1(merge_nums1, merge_m, merge_nums2, merge_n)
-
-
 # print(get_insert_index(merge_nums, 6))
+
+
+# 92. Reverse Linked List II
+print('\n#92. Reverse Linked List II:')
+print('See Leetcode')
 
 
 # 95. Unique Binary Search Trees II
@@ -1491,10 +1504,31 @@ def is_palindrome(s):
     return True
 
 
+def is_palindrome_better(s):
+    length = len(s)
+    if length <= 1:
+        return True
+    low = 0
+    high = length - 1
+    while low <= high:
+        if not s[low].isalnum():
+            low += 1
+        elif not s[high].isalnum():
+            high -= 1
+        else:
+            if s[low].lower() != s[high].lower():
+                return False
+            else:
+                low += 1
+                high -= 1
+    return True
+
+
 print('\n#125. Valid Palindrome:')
-# is_palindrome_s = "A man, a plan, a canal: Panama"
-is_palindrome_s = "race a car"
+is_palindrome_s = "A man, a plan, a canal: Panama"
+# is_palindrome_s = "race a car"
 print(is_palindrome(is_palindrome_s))
+print(is_palindrome_better(is_palindrome_s))
 
 
 # 134. Gas Station
@@ -2146,10 +2180,20 @@ class ListNode(object):
 
 
 def reverse_list(head):
-    return head
+    if not head:
+        return None
+    curr = head
+    prev = None
+    while curr:
+        next_node = curr.next
+        curr.next = prev
+        prev = curr
+        curr = next_node
+    return prev
 
 
 print('\n#206. Reverse Linked List:')
+print('Done')
 
 
 # 213. House Robber II
@@ -3017,6 +3061,45 @@ def power_of_three(n):
 print('\n#326. Power of Three:')
 test_power_of_three = 81
 print(power_of_three(test_power_of_three))
+
+
+# 334. Increasing Triplet Subsequence
+# arr[i] < arr[j] < arr[k] given 0 ≤ i < j < k ≤ n-1
+# [1, 2, 3, 4, 5] --> True
+# [5, 4, 3, 2, 1] --> False
+def increasing_triplet(nums):
+    if not nums:
+        return False
+    length = len(nums)
+    if length <= 2:
+        return False
+    low = 0
+    high = length - 1
+    for i in range(length):
+        if nums[i] <= nums[low]:
+            low = i
+        else:
+            break
+    for j in range(length - 1, -1, -1):
+        if nums[j] >= nums[high]:
+            high = j
+        else:
+            break
+    if low >= high:
+        return False
+    for k in range(low + 1, high):
+        if nums[low] <= nums[k] <= nums[high]:
+            return True
+    return False
+
+
+# increasing_triplet_nums = [0, 1, 2, 3, 4]
+# increasing_triplet_nums = [1, 5, 0, 3]
+# increasing_triplet_nums = [5, 4, 5, 2, 1]
+increasing_triplet_nums = [1, 2, -10, -8, -7]
+print('\n#334. Increasing Triplet Subsequence:')
+print(increasing_triplet(increasing_triplet_nums))
+print('not done')
 
 
 # 338. Counting Bits
