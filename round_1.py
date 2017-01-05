@@ -391,6 +391,43 @@ print(reverse_integer_1(reverse_integer_x))
 print(reverse_integer_2(reverse_integer_x))
 
 
+# 8. String to Integer (atoi)
+def my_atoi(str):
+    length = len(str)
+    if length == 0:
+        return 0
+    start = 0
+    sign = 1
+    result = ''
+    for i in range(length):
+        if str[i] != ' ':
+            start = i
+            break
+    if str[start] == '-':
+        sign = -1
+    elif '0' <= str[start] <= '9':
+        result += str[start]
+    if start + 1 < length:
+        for j in range(start + 1, length):
+            if '0' <= str[j] <= '9':
+                result += str[j]
+            elif str[j] == '+' or str[j] == '-':
+                return 0
+    if not result:
+        return 0
+    return sign * int(result)
+
+
+# my_atoi_str = ' - 3 924x8fc '
+# my_atoi_str = ' + 374'
+# my_atoi_str = '+'
+# my_atoi_str = '-'
+# my_atoi_str = '+-2'
+my_atoi_str = '  -0012a42'
+print('\n#8. String to Integer (atoi):')
+print(my_atoi(my_atoi_str))
+
+
 # 9. Palindrome Number
 # No extra space
 # Cannot convert it to a string
@@ -607,8 +644,22 @@ print(remove_element_best(remove_element_best_nums, test_remove_element_val))
 
 
 # 28. Implement strStr()
+# '', '' --> 0
+# 'a', '' --> 0
 def str_str(haystack, needle):
-    pass
+    hay_len = len(haystack)
+    needle_len = len(needle)
+    if needle_len > hay_len:
+        return -1
+    if needle_len == 0:
+        return 0
+    for i in range(hay_len - needle_len + 1):
+        for j in range(needle_len):
+            if needle[j] != haystack[i + j]:
+                break
+            if j == needle_len - 1:
+                return i
+    return -1
 
 
 str_str_haystack = 'cabac'
