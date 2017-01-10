@@ -392,30 +392,60 @@ print(reverse_integer_2(reverse_integer_x))
 
 
 # 8. String to Integer (atoi)
-def my_atoi(str):
-    length = len(str)
+def my_atoi(string):
+    if not string:
+        return 0
+    string = string.strip()
+    length = len(string)
     if length == 0:
         return 0
     start = 0
     sign = 1
-    result = ''
-    for i in range(length):
-        if str[i] != ' ':
-            start = i
-            break
-    if str[start] == '-':
+    result = 0
+    if string[start] == '-':
         sign = -1
-    elif '0' <= str[start] <= '9':
-        result += str[start]
-    if start + 1 < length:
-        for j in range(start + 1, length):
-            if '0' <= str[j] <= '9':
-                result += str[j]
-            elif str[j] == '+' or str[j] == '-':
-                return 0
-    if not result:
+        start += 1
+    elif string[start] == '+':
+        start += 1
+    for i in range(start, length):
+        if string[i] < '0' or string[i] > '9':
+            break
+        result = (result * 10) + int(string[i])
+    result *= sign
+    int_max = pow(2, 31) - 1
+    int_min = -int_max - 1
+    if sign == 1 and result > int_max:
+        return int_max
+    if sign == -1 and result < int_min:
+        return int_min
+    return result
+
+
+def my_atoi_nine_chapter(string):
+    string = string.strip()
+    if string == "":
         return 0
-    return sign * int(result)
+    i = 0
+    sign = 1
+    result = 0
+    length = len(string)
+    max_int = (1 << 31) - 1
+    if string[i] == '+':
+        i += 1
+    elif string[i] == '-':
+        i += 1
+        sign = -1
+
+    for i in range(i, length):
+        if string[i] < '0' or string[i] > '9':
+            break
+        result = result * 10 + int(string[i])
+    result *= sign
+    if result >= max_int:
+        return max_int
+    if result < max_int * -1:
+        return max_int * - 1 - 1
+    return result
 
 
 # my_atoi_str = ' - 3 924x8fc '
@@ -423,9 +453,11 @@ def my_atoi(str):
 # my_atoi_str = '+'
 # my_atoi_str = '-'
 # my_atoi_str = '+-2'
-my_atoi_str = '  -0012a42'
+# my_atoi_str = '  -0012a42'
+my_atoi_str = '-2147483649'
 print('\n#8. String to Integer (atoi):')
 print(my_atoi(my_atoi_str))
+print(my_atoi_nine_chapter(my_atoi_str))
 
 
 # 9. Palindrome Number
@@ -446,6 +478,82 @@ def is_palindrome(x):
 print('\n#9. Palindrome Number:')
 test_is_palindrome_x = 646
 print(is_palindrome(test_is_palindrome_x))
+
+# 10. Regular Expression Matching
+"""
+'.' Matches any single character.
+'*' Matches zero or more of the preceding element.
+The matching should cover the entire input string (not partial).
+The function prototype should be:
+def isMatch(self, s, p):
+Some examples:
+isMatch("aa","a") → false
+isMatch("aa","aa") → true
+isMatch("aaa","aa") → false
+isMatch("aa", "a*") → true
+isMatch("aa", ".*") → true
+isMatch("ab", ".*") → true
+isMatch("aab", "c*a*b") → true
+"""
+
+
+def is_match(s, p):
+    return s + p + ' Not Done'
+
+
+is_match_s = 'aa'
+is_match_p = 'a'
+print('\n#10. Regular Expression Matching:')
+print(is_match(is_match_s, is_match_p))
+
+
+# 12. Integer to Roman
+# range from 1 to 3999
+def int_to_roman(num):
+    store = []
+    count = 0
+    while num:
+        remainder = num % 10
+        store.append(int_to_roman_single_character(count, remainder))
+        num //= 10
+        count += 1
+    result = ''
+    for i in range(len(store) - 1, -1, -1):
+        result += store[i]
+    return result
+
+
+def int_to_roman_single_character(bit, num):
+    # bit can be 0, 1, 2
+    # num can be 0, 1, 2, ..., 9
+    if bit == 3:
+        return 'M' * num
+    romans_dict = {
+        1: 'I',
+        5: 'V',
+        10: 'X',
+        50: 'L',
+        100: 'C',
+        500: 'D',
+        1000: 'M'
+    }
+    romans = [''] * 10
+    romans[1] = romans_dict[pow(10, bit)]
+    for i in range(2, 4):
+        romans[i] = romans[i - 1] + romans[1]
+    romans[4] = romans_dict[pow(10, bit)] + romans_dict[pow(10, bit) * 5]
+    romans[5] = romans_dict[pow(10, bit) * 5]
+    for j in range(6, 9):
+        romans[j] = romans[j - 1] + romans[1]
+    romans[9] = romans_dict[pow(10, bit)] + romans_dict[pow(10, bit) * 10]
+    return romans[num]
+
+
+int_to_roman_num = 374
+# int_to_roman_num = 111
+# int_to_roman_num = 3999
+print('\n#12. Integer to Roman:')
+print(int_to_roman(int_to_roman_num))
 
 
 # 13. Roman to Integer
@@ -494,14 +602,14 @@ def longest_common_prefix(strs):
     result = StringIO()
     for j in range(min_length):
         letter = strs[0][j]
-        if if_letter_match(strs, j):
+        if letter_match(strs, j):
             result.write(letter)
         else:
             break
     return result.getvalue()
 
 
-def if_letter_match(strs, i):
+def letter_match(strs, i):
     length = len(strs)
     letter = strs[0][i]
     for k in range(1, length):
@@ -510,11 +618,33 @@ def if_letter_match(strs, i):
     return True
 
 
+def longest_common_prefix_second(strs):
+    length = len(strs)
+    if length == 0:
+        return ''
+    if length == 1:
+        return strs[0]
+    min_length = len(strs[0])
+    for i in range(1, length):
+        if len(strs[i]) < min_length:
+            min_length = len(strs[i])
+    result = ''
+    for j in range(min_length):
+        letter = strs[0][j]
+        if letter_match(strs, j):
+            result += letter
+        else:
+            break
+    return result
+
+
 print('\n#14. Longest Common Prefix:')
 longest_common_prefix_strs = ['ab', 'aba', 'abc', 'abd', 'abcd']
+# longest_common_prefix_strs = ['a', 'a', 'b']
 # longest_common_prefix_strs = ['a', 'b']
 # longest_common_prefix_strs = ['aca', 'cba']
 print(longest_common_prefix(longest_common_prefix_strs))
+print(longest_common_prefix_second(longest_common_prefix_strs))
 
 
 # 20. Valid Parentheses
@@ -846,61 +976,92 @@ print(count_and_say(count_and_say_n))
 # 42. Trapping Rain Water
 def trap_rain_water(height):
     # Time O(n), Space O(n)
+    if not height:
+        return 0
     length = len(height)
     result = 0
     if length <= 2:
         return 0
-    else:  # length >= 3
-        left = [0] * length
-        right = [0] * length
-        max_left = height[0]
-        max_right = height[-1]
-        for i in range(1, length):
-            if height[i - 1] > max_left:
-                max_left = height[i - 1]
-            left[i] = max_left
-        print(left)
-        for j in range(-2, -length - 1, -1):
-            if height[j + 1] > max_right:
-                max_right = height[j + 1]
-            right[j] = max_right
-        print(right)
-        for k in range(length):
-            result += max((min(left[k], right[k]) - height[k]), 0)
-        return result
+    # length >= 3
+    left = [0] * length
+    right = [0] * length
+    max_left = height[0]
+    max_right = height[-1]
+    for i in range(1, length):
+        if height[i - 1] > max_left:
+            max_left = height[i - 1]
+        left[i] = max_left
+    for j in range(-2, -length - 1, -1):
+        if height[j + 1] > max_right:
+            max_right = height[j + 1]
+        right[j] = max_right
+    for k in range(length):
+        result += max((min(left[k], right[k]) - height[k]), 0)
+    return result
 
 
 def trap_rain_water_constant_space(height):
     # Time O(n), Space O(1)
     # This one is a little better
+    if not height:
+        return 0
     length = len(height)
     result = 0
     if length <= 2:
         return 0
-    else:  # length >= 3
-        max_height = height[0]
-        max_index = 0
-        for i in range(length):
-            if height[i] > max_height:
-                max_height = height[i]
-                max_index = i
-        max_left = height[0]
-        max_right = height[-1]
-        for j in range(1, max_index):
-            if height[j - 1] > max_left:
-                max_left = height[j - 1]
-            result += max((max_left - height[j]), 0)
-        for k in range(length - 2, max_index, -1):
-            if height[k + 1] > max_right:
-                max_right = height[k + 1]
-            result += max((max_right - height[k]), 0)
-        return result
+    # length >= 3
+    max_height = height[0]
+    max_index = 0
+    for i in range(length):
+        if height[i] > max_height:
+            max_height = height[i]
+            max_index = i
+    max_left = height[0]
+    max_right = height[-1]
+    for j in range(1, max_index):
+        if height[j - 1] > max_left:
+            max_left = height[j - 1]
+        result += max((max_left - height[j]), 0)
+    for k in range(length - 2, max_index, -1):
+        if height[k + 1] > max_right:
+            max_right = height[k + 1]
+        result += max((max_right - height[k]), 0)
+    return result
+
+
+def trap_rain_water_two_pointers(height):
+    # Time O(n), Space O(1), two pointers
+    if not height:
+        return 0
+    length = len(height)
+    if length <= 2:
+        return 0
+    result = 0
+    low = 0
+    high = length - 1
+    left_max = height[low]
+    right_max = height[high]
+    while low <= high:
+        if left_max < right_max:
+            if height[low] >= left_max:
+                left_max = height[low]
+            else:
+                result += left_max - height[low]
+            low += 1
+        else:
+            if height[high] >= right_max:
+                right_max = height[high]
+            else:
+                result += right_max - height[high]
+            high -= 1
+    return result
 
 
 trap_rain_water_height = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]
 print('\n#42. Trapping Rain Water:')
 print(trap_rain_water(trap_rain_water_height))
 print(trap_rain_water_constant_space(trap_rain_water_height))
+print(trap_rain_water_two_pointers(trap_rain_water_height))
 
 
 # 48. Rotate Image
@@ -1136,8 +1297,24 @@ def is_all_nine(nums):
 
 
 plus_one_digits = [9, 9, 9]
-print('\n#66. Plus One')
+print('\n#66. Plus One:')
 print(plus_one(plus_one_digits))
+
+
+# 67. Add Binary
+def add_binary(a, b):
+    a = int(a, 2)
+    b = int(b, 2)
+    result = a + b
+    result = bin(result)
+    result = result[2:len(result)]
+    return result
+
+
+add_binary_a = '11'
+add_binary_b = '1'
+print('\n#67. Add Binary:')
+print(add_binary(add_binary_a, add_binary_b))
 
 
 # 70. Climbing Stair
@@ -3666,62 +3843,64 @@ print('done on leetcode')
 
 # 407. Trapping Rain Water II
 def trap_rain_water_2d(height_map):
+    if not height_map:
+        return 0
     row_len = len(height_map)
     if row_len <= 2:
         return 0
-    else:  # row_len >= 3
-        col_len = len(height_map[0])
-        if col_len <= 2:
-            return 0
-        else:  # col_len >= 3
-            result = 0
-            row_max = [0] * row_len
-            col_max = [0] * col_len
+    # row_len >= 3
+    col_len = len(height_map[0])
+    if col_len <= 2:
+        return 0
+    # col_len >= 3
+    result = 0
+    row_max = [0] * row_len
+    col_max = [0] * col_len
 
-            for i in range(row_len):
-                row_max[i] = get_list_max_index(height_map[i])
+    for i in range(row_len):
+        row_max[i] = get_list_max_index(height_map[i])
 
-            for j in range(col_len):
-                temp = list()
-                for k in range(row_len):
-                    temp.append(height_map[k][j])
-                col_max[j] = get_list_max_index(temp)
+    for j in range(col_len):
+        temp = list()
+        for k in range(row_len):
+            temp.append(height_map[k][j])
+        col_max[j] = get_list_max_index(temp)
 
-            for row in range(1, row_len - 1):
-                left_max = height_map[row][0]
-                right_max = height_map[row][-1]
-                for index in range(1, col_len - 1):
-                    row_value = 0
-                    if index == row_max[row]:
-                        pass
-                    elif index < row_max[row]:
-                        for left in range(index):
-                            if height_map[row][left] > left_max:
-                                left_max = height_map[row][left]
-                        row_value = left_max
-                    else:  # index > row_max[row]
-                        for right in range(col_len - 1, index, -1):
-                            if height_map[row][right] > right_max:
-                                right_max = height_map[row][right]
-                        row_value = right_max
-                    if row_value == 0:
-                        pass
-                    else:
-                        if col_max[index] == row:
-                            pass
-                        elif col_max[index] > row:
-                            max_up = height_map[0][index]
-                            for m in range(row):
-                                if height_map[m][index] > max_up:
-                                    max_up = height_map[m][index]
-                            result += max((min(max_up, row_value) - height_map[row][index]), 0)
-                        else:  # col_max[index] < row
-                            max_down = height_map[-1][index]
-                            for n in range(row_len - 1, row, -1):
-                                if height_map[n][index] > max_down:
-                                    max_down = height_map[n][index]
-                            result += max((min(max_down, row_value) - height_map[row][index]), 0)
-            return result
+    for row in range(1, row_len - 1):
+        left_max = height_map[row][0]
+        right_max = height_map[row][-1]
+        for index in range(1, col_len - 1):
+            row_value = 0
+            if index == row_max[row]:
+                pass
+            elif index < row_max[row]:
+                for left in range(index):
+                    if height_map[row][left] > left_max:
+                        left_max = height_map[row][left]
+                row_value = left_max
+            else:  # index > row_max[row]
+                for right in range(col_len - 1, index, -1):
+                    if height_map[row][right] > right_max:
+                        right_max = height_map[row][right]
+                row_value = right_max
+            if row_value == 0:
+                pass
+            else:
+                if col_max[index] == row:
+                    pass
+                elif col_max[index] > row:
+                    max_up = height_map[0][index]
+                    for m in range(row):
+                        if height_map[m][index] > max_up:
+                            max_up = height_map[m][index]
+                    result += max((min(max_up, row_value) - height_map[row][index]), 0)
+                else:  # col_max[index] < row
+                    max_down = height_map[-1][index]
+                    for n in range(row_len - 1, row, -1):
+                        if height_map[n][index] > max_down:
+                            max_down = height_map[n][index]
+                    result += max((min(max_down, row_value) - height_map[row][index]), 0)
+    return result
 
 
 def get_list_max_index(nums):
@@ -3835,6 +4014,48 @@ print('\n#415. Add Strings:')
 add_strings_num1 = '0'
 add_strings_num2 = '9'
 print(add_strings(add_strings_num1, add_strings_num2))
+
+
+# 438. Find All Anagrams in a String
+# Input: s: 'abab' p: 'ab'
+# Output:[0, 1, 2]
+def find_anagrams(s, p):
+    # This is too slow, need optimization
+    if not s:
+        return []
+    s_len = len(s)
+    p_len = len(p)
+    if s_len < p_len:
+        return []
+    result = list()
+    for i in range(s_len - p_len + 1):
+        if is_anagram(s[i:i + p_len], p):
+            result.append(i)
+    return result
+
+
+def is_anagram(a, b):
+    stores = dict()
+    for item in a:
+        if item in stores:
+            stores[item] += 1
+        else:
+            stores[item] = 1
+    for letter in b:
+        if letter not in stores:
+            return False
+        else:
+            stores[letter] -= 1
+    for key, value in stores.items():
+        if value != 0:
+            return False
+    return True
+
+
+find_anagrams_s = 'abab'
+find_anagrams_p = 'ab'
+print('\n#438. Find All Anagrams in a String:')
+print(find_anagrams(find_anagrams_s, find_anagrams_p))
 
 
 # 448. Find all numbers disappeared in an array
