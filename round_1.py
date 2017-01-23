@@ -7,6 +7,7 @@ from io import StringIO
 # target = 9
 # return [0, 1]
 # Assume each input have exactly one solution
+# But you cannot assume all numbers are unique
 def two_sum(nums, target):
     length = len(nums)
     first = 0
@@ -90,6 +91,30 @@ def two_sum_hash(nums, target):
     return answer
 
 
+# There are duplicates, use list as the value of dictionary
+def two_sum_hash_list_as_value(nums, target):
+    stores = dict()
+    for index, value in enumerate(nums):
+        if value in stores:
+            stores[value].append(index)
+        else:
+            stores[value] = [index]
+    result = [-2, -1]
+    for i in range(len(nums)):
+        remainder = target - nums[i]
+        if remainder in stores:
+            store = stores[remainder]
+            if remainder == nums[i]:
+                if len(store) == 2:
+                    result = store
+                    break
+                else:
+                    continue
+            result = [i, store[0]]
+            break
+    return result
+
+
 print('\n#1. Two Sum:')
 # two_sum_nums = [2, 7, 11, 15, 18, 20, 27]
 # two_sum_nums = [2, 7, 11]
@@ -100,11 +125,11 @@ two_sum_nums = [0, 4, 3, 0]
 # two_sum_target = 6
 # two_sum_target = 0
 two_sum_target = 7
-print(two_sum(two_sum_nums, two_sum_target))
-print(two_sum_1(two_sum_nums, two_sum_target))
-print(two_sum_2(two_sum_nums, two_sum_target))
+# print(two_sum(two_sum_nums, two_sum_target))
+# print(two_sum_1(two_sum_nums, two_sum_target))
+# print(two_sum_2(two_sum_nums, two_sum_target))
 print(two_sum_hash(two_sum_nums, two_sum_target))
-print('NOT done')
+print(two_sum_hash_list_as_value(two_sum_nums, two_sum_target))
 
 
 # 4. Median of Two Sorted Arrays
@@ -1108,6 +1133,159 @@ rotate_image_matrix = [
 ]
 print('\n#48. Rotate Image:')
 rotate_image(rotate_image_matrix)
+
+
+# 49. Group Anagrams
+# given: ["eat", "tea", "tan", "ate", "nat", "bat"]
+# All inputs will be in lower-case
+# return:
+# [
+#   ["ate", "eat","tea"],
+#   ["nat", "tan"],
+#   ["bat"]
+# ]
+# Time Limit Exceeded, not happy
+def group_anagrams_result_sorted(strs):
+    if strs is None:
+        return [[]]
+    length = len(strs)
+    if length == 0:
+        return [[]]
+    if length == 1:
+        return [[strs[0]]]
+    copy = list()
+    for word in strs:
+        copy.append(word)
+    for i in range(length):
+        temp = ''.join(sorted(copy[i]))
+        copy[i] = temp
+    counts = [0] * length
+    for j in range(length):
+        if counts[j] != 0:
+            continue
+        target = copy[j]
+        for k in range(j + 1, length):
+            if counts[k] != 0:
+                continue
+            if copy[k] == target:
+                counts[k] = j + 1
+        counts[j] = j + 1
+    indexes = dict()
+    for index, item in enumerate(counts):
+        if item in indexes:
+            indexes[item].append(index)
+        else:
+            indexes[item] = [index]
+    lengths = dict()
+    for key, value in indexes.items():
+        lengths[key] = len(value)
+    length_indexes = dict()
+    for key, value in lengths.items():
+        if value in length_indexes:
+            length_indexes[value].append(key)
+        else:
+            length_indexes[value] = [key]
+    result = list()
+    the_length = len(length_indexes)
+    for l in range(the_length):
+        max_index = max(length_indexes)
+        max_item = length_indexes[max_index]
+        for each_item in max_item:
+            temp = [strs[m] for m in indexes[each_item]]
+            result.append(temp)
+        del length_indexes[max_index]
+    return result
+
+
+# Time Limit Exceeded, not happy
+def group_anagrams_result_not_sorted(strs):
+    if strs is None:
+        return [[]]
+    length = len(strs)
+    if length == 0:
+        return [[]]
+    if length == 1:
+        return [[strs[0]]]
+    copy = list()
+    for word in strs:
+        copy.append(word)
+    for i in range(length):
+        temp = ''.join(sorted(copy[i]))
+        copy[i] = temp
+    counts = [0] * length
+    for j in range(length):
+        if counts[j] != 0:
+            continue
+        target = copy[j]
+        for k in range(j + 1, length):
+            if counts[k] != 0:
+                continue
+            if copy[k] == target:
+                counts[k] = j + 1
+        counts[j] = j + 1
+    indexes = dict()
+    for index, item in enumerate(counts):
+        if item in indexes:
+            indexes[item].append(index)
+        else:
+            indexes[item] = [index]
+    result = list()
+    for key, value in indexes.items():
+        result.append([strs[l] for l in value])
+    return result
+
+
+# https://www.youtube.com/watch?v=DhiT3hDt3ZA
+# I think the one is not correct
+# This one is answer to the following problem:
+# https://www.lintcode.com/en/problem/anagrams/
+def group_anagrams_jikai_tang(strs):
+    dic = {}
+    res = []
+    for word in strs:
+        ordered_str = str(sorted(word))
+        print(ordered_str)
+        if ordered_str in dic:
+            dic[ordered_str].append(word)
+        else:
+            dic[ordered_str] = [word]
+    for key in dic:
+        if len(dic[key]) >= 2:
+            res += dic[key]
+    return res
+
+
+# http://www.cnblogs.com/zuoyuan/p/3769993.html
+# Finally accepted. but only 42%, not good enough, will do it later
+def group_anagrams_zuoyuan(strs):
+    if strs is None:
+        return [[]]
+    length = len(strs)
+    if length == 0:
+        return [[]]
+    if length == 1:
+        return [[strs[0]]]
+    dic = {}
+    res = []
+    for word in strs:
+        sorted_word = ''.join(sorted(word))
+        if sorted_word in dic:
+            dic[sorted_word].append(word)
+        else:
+            dic[sorted_word] = [word]
+    for key, value in dic.items():
+        res.append(value)
+    return res
+
+
+group_anagrams_strs = ["eat", "tea", "tan", "ate", "nat", "bat"]
+# group_anagrams_strs = ["", "b", 'c', 'ab', 'ba', 'ab']
+print('\n49. Group Anagrams:')
+print(group_anagrams_result_sorted(group_anagrams_strs))
+print(group_anagrams_result_not_sorted(group_anagrams_strs))
+# print(group_anagrams_jikai_tang(group_anagrams_strs))
+print(group_anagrams_zuoyuan(group_anagrams_strs))
+print('NOT DONE')
 
 
 # 53. Maximum Subarray
@@ -2771,7 +2949,7 @@ print(product_except_self_constant_space(product_except_self_nums))
 # s = "anagram", t = "nagaram", return true.
 # s = "rat", t = "car", return false.
 # only lowercase alphabets
-def is_anagram(s, t):
+def is_anagram_lowercase(s, t):
     stores = dict()
     for i in range(97, 123):
         stores[chr(i)] = 0
@@ -2785,10 +2963,48 @@ def is_anagram(s, t):
     return True
 
 
+# This one is faster than the lowercase one
+def is_anagram_dict(s, t):
+    s_len = len(s)
+    t_len = len(t)
+    if s_len != t_len:
+        return False
+    letters = dict()
+    for item in s:
+        if item in letters:
+            letters[item] += 1
+        else:
+            letters[item] = 1
+    for letter in t:
+        if letter not in letters:
+            return False
+        letters[letter] -= 1
+        if letters[letter] < 0:
+            return False
+    return True
+
+
+# Faster than lowercase but slower than dict one
+def is_anagram_sort_first(s, t):
+    s_len = len(s)
+    t_len = len(t)
+    if s_len != t_len:
+        return False
+    s = ''.join(sorted(s))
+    t = ''.join(sorted(t))
+    if s == t:
+        return True
+    else:
+        return False
+
+
 print('\n#242. Valid Anagram:')
 is_anagram_s = 'anagram'
 is_anagram_t = 'nagaram'
-print(is_anagram(is_anagram_s, is_anagram_t))
+print(is_anagram_lowercase(is_anagram_s, is_anagram_t))
+print(is_anagram_dict(is_anagram_s, is_anagram_t))
+print(is_anagram_sort_first(is_anagram_s, is_anagram_t))
+print(is_anagram_sort_first('', ''))
 
 
 # 258. Add Digits:
@@ -3674,6 +3890,32 @@ print(guess_number(test_guess_number_n))
 print('NOT done')
 
 
+# 378. Kth Smallest Element in a Sorted Matrix
+# n x n matrix, rows and columns are sorted in ascending order
+# Find the kth smallest element in the matrix
+# It is the kth smallest element in the sorted order, not the kth distinct element
+# 1 <= k <= n^2
+def kth_smallest(matrix, k):
+    length = len(matrix)
+    positions = [0] * length
+    result = matrix[0][0]
+    if k == 1:
+        return result
+    count = 1
+    print('NOT DONE')
+    return positions * count
+
+
+kth_smallest_matrix = [
+    [1, 5, 9],
+    [10, 11, 13],
+    [12, 13, 15]
+]
+kth_smallest_k = 8
+print('\n#378. Kth Smallest Element in a Sorted Matrix:')
+print(kth_smallest(kth_smallest_matrix, kth_smallest_k))
+
+
 # 383. Ransom Note
 # Use magazine to construct ransom_note
 # Each letter in the magazine can only be used once in your ransom note
@@ -4029,7 +4271,7 @@ def find_anagrams(s, p):
         return []
     result = list()
     for i in range(s_len - p_len + 1):
-        if is_anagram(s[i:i + p_len], p):
+        if is_anagram_lowercase(s[i:i + p_len], p):
             result.append(i)
     return result
 
@@ -4052,10 +4294,73 @@ def is_anagram(a, b):
     return True
 
 
+# Submission Result: Time Limit Exceeded
+def find_anagrams_sort_first(s, p):
+    if s is None or p is None:
+        return []
+    s_len = len(s)
+    p_len = len(p)
+    if s_len < p_len:
+        return []
+    target = ''.join(sorted(p))
+    result = []
+    for i in range(s_len - p_len + 1):
+        word = s[i:i + p_len]
+        sorted_word = ''.join(sorted(word))
+        if sorted_word == target:
+            result.append(i)
+    return result
+
+
+# Accepted, 96.31% and bug free, awesome!!!
+def find_anagrams_dict(s, p):
+    if s is None or p is None:
+        return []
+    s_len = len(s)
+    p_len = len(p)
+    if s_len < p_len:
+        return []
+    if s_len == p_len:
+        if ''.join(sorted(s)) == ''.join(sorted(p)):
+            return [0]
+        else:
+            return []
+    target = {}
+    for letter in p:
+        if letter in target:
+            target[letter] += 1
+        else:
+            target[letter] = 1
+    result = []
+    current = {}
+    for i in range(p_len):
+        if s[i] in current:
+            current[s[i]] += 1
+        else:
+            current[s[i]] = 1
+    if current == target:
+        result.append(0)
+    for j in range(1, s_len - p_len + 1):
+        new_char = s[p_len + j - 1]
+        if new_char in current:
+            current[new_char] += 1
+        else:
+            current[new_char] = 1
+        remove_char = s[j - 1]
+        current[remove_char] -= 1
+        if current[remove_char] == 0:
+            del current[remove_char]
+        if current == target:
+            result.append(j)
+    return result
+
+
 find_anagrams_s = 'abab'
 find_anagrams_p = 'ab'
 print('\n#438. Find All Anagrams in a String:')
 print(find_anagrams(find_anagrams_s, find_anagrams_p))
+print(find_anagrams_sort_first(find_anagrams_s, find_anagrams_p))
+print(find_anagrams_dict(find_anagrams_s, find_anagrams_p))
 
 
 # 448. Find all numbers disappeared in an array
