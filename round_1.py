@@ -4398,3 +4398,41 @@ hamming_distance_x = 1
 hamming_distance_y = 4
 print('\n#461. Hamming Distance:')
 print(hamming_distance(hamming_distance_x, hamming_distance_y))
+
+
+# 766. Toeplitz Matrix
+def is_toeplitz_matrix(matrix):
+    if matrix is None:
+        return True
+    row = len(matrix)
+    if row <= 1:
+        return True
+    col = len(matrix[0])
+    if col <= 1:
+        return True
+    # from 40 to 30 to 00
+    for i in range(row - 1, -1, -1):
+        j = 0
+        new_i = i
+        value = matrix[new_i][j]
+        while new_i < row and j < col:
+            if matrix[new_i][j] != value:
+                return False
+            new_i += 1
+            j += 1
+    # from 00 to 01 to 03
+    for j in range(0, col):
+        i = 0
+        new_j = j
+        value = matrix[i][new_j]
+        while i < row and new_j < col:
+            if matrix[i][new_j] != value:
+                return False
+            i += 1
+            new_j += 1
+    return True
+
+
+is_toeplitz_matrix_matrix = [[1, 2, 3, 4], [5, 1, 2, 3], [9, 5, 1, 2]]
+print('\n#766. Toeplitz Matrix:')
+print(is_toeplitz_matrix(is_toeplitz_matrix_matrix))
