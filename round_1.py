@@ -132,6 +132,62 @@ print(two_sum_hash(two_sum_nums, two_sum_target))
 print(two_sum_hash_list_as_value(two_sum_nums, two_sum_target))
 
 
+# 3. Longest Substring Without Repeating Characters
+# This one is too slow
+def length_of_longest_and_unique_substring_too_slow(s):
+    if s is None:
+        return 0
+    length = len(s)
+    result = 0
+    for i in range(0, length):
+        count = 0
+        dic = {}
+        for j in range(i, -1, -1):
+            char = s[j: j + 1]
+            if char in dic:
+                break
+            else:
+                dic[char] = 1
+                count += 1
+        if count > result:
+            result = count
+    return result
+
+
+def length_of_longest_and_unique_substring(s):
+    if s is None:
+        return 0
+    length = len(s)
+    result = 0
+    lasts = {}
+    last = 0
+    for i in range(0, length):
+        current = 1
+        char = s[i: i + 1]
+        if char in lasts:
+            current = min(last + 1, i - lasts[char])
+        else:
+            current = last + 1
+        lasts[char] = i
+        last = current
+        if current > result:
+            result = current
+    return result
+
+
+print('\n#3. Longest Substring Without Repeating Characters:')
+length_of_longest_and_unique_substring_one = 'abcabcbb'
+length_of_longest_and_unique_substring_two = 'bbbbb'
+length_of_longest_and_unique_substring_three = 'pwwkew'
+length_of_longest_and_unique_substring_four = 'dvdf'
+length_of_longest_and_unique_substring_five = 'dvccdev'
+print(length_of_longest_and_unique_substring(length_of_longest_and_unique_substring_one))
+print(length_of_longest_and_unique_substring(length_of_longest_and_unique_substring_two))
+print(length_of_longest_and_unique_substring(length_of_longest_and_unique_substring_three))
+print(length_of_longest_and_unique_substring(length_of_longest_and_unique_substring_four))
+print(length_of_longest_and_unique_substring(length_of_longest_and_unique_substring_five))
+
+
 # 4. Median of Two Sorted Arrays
 # Two sorted arrays sorted_one, sorted_two of size m and n
 # Find the median of the two sorted arrays together
